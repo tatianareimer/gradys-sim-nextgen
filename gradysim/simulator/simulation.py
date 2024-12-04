@@ -4,7 +4,7 @@ import time
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Type, Optional, Dict, Tuple, Union
+from typing import Type, Optional, Dict, Tuple, Union, Any
 
 from gradysim.encapsulator.python import PythonEncapsulator
 from gradysim.protocol.interface import IProtocol
@@ -127,7 +127,7 @@ class Simulator:
 
 
 
-    def create_node(self, position: Position, protocol: Type[IProtocol], identifier: int) -> Node:
+    def create_node(self, position: Position, protocol: Type[IProtocol], identifier: int, **kwargs: Any) -> Node:
         """
         Creates a new simulation node, encapsulating it. You shouldn't call this method directly, prefer to use the
         [SimulationBuilder][gradysim.simulator.simulation.SimulationBuilder] API.
@@ -136,6 +136,7 @@ class Simulator:
             position: Position where the node should be placed
             protocol: Type of protocol this node will run
             identifier: Identifier of the node
+            kwards: Additional arguments of the node
 
         Returns:
             The encapsulated node
@@ -143,7 +144,8 @@ class Simulator:
         new_node = Node()
         new_node.id = identifier
         new_node.position = position
-
+        new_node.kwargs = kwargs
+        
         encapsulator = PythonEncapsulator(new_node, **self._handlers)
         encapsulator.encapsulate(protocol)
 
@@ -388,7 +390,7 @@ class SimulationBuilder:
         self._handlers[handler.get_label()] = handler
         return self
 
-    def add_node(self, protocol: Type[IProtocol], position: Position) -> int:
+    def add_node(self, protocol: Type[IProtocol], position: Position, **kwargs) -> int:
         """
         Adds a new node to the simulation
 
@@ -399,7 +401,7 @@ class SimulationBuilder:
         Returns:
             The id of the node created
         """
-        self._nodes_to_add.append((position, protocol))
+        self._nodes_to_add.append((position, protocol, kwargs))
         return len(self._nodes_to_add) - 1
 
     def build(self) -> Simulator:
@@ -415,6 +417,6 @@ class SimulationBuilder:
             self._configuration
         )
         for index, node_to_add in enumerate(self._nodes_to_add):
-            simulator.create_node(node_to_add[0], node_to_add[1], index)
+            simulator.create_node(node_to_add[0], node_to_add[1], index, **node_to_add[2])
 
         return simulator

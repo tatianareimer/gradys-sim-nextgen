@@ -5,7 +5,7 @@ into interactions with the python simulator.
 """
 
 import logging
-from typing import Type, Optional
+from typing import Type, Optional, Any
 
 from gradysim.protocol.interface import IProtocol, IProvider
 from gradysim.encapsulator.interface import IEncapsulator
@@ -127,6 +127,25 @@ class PythonProvider(IProvider):
             the node's unique identifier in the simulation
         """
         return self.node.id
+    
+    def get_kwargs(self) -> Any:
+        """
+        Returns the node's arguments
+
+        Returns:
+            the node's arguments
+        """
+        return self.node.kwargs
+    
+    def set_kwargs(self, parameter, value) -> None:
+        """
+        Set the node's arguments
+
+        Returns:
+            Node
+        """
+        self.node.kwargs[parameter] = value
+
 
 
 class PythonEncapsulator(IEncapsulator):

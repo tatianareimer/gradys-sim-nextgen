@@ -24,3 +24,6 @@ class Node(Generic[T]):
 
     position: Position
     """Node's position inside the simulation"""
+
+    kwargs: dict
+    """Node's additional arguments"""

@@ -81,6 +81,26 @@ class IProvider(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_kwargs(self) -> Any:
+        """
+        Returns the node's arguments
+
+        Returns:
+            the node's arguments
+        """
+        pass
+
+    @abstractmethod
+    def set_kwargs(self, parameter, value) -> None:
+        """
+        Set the node's arguments
+
+        Returns:
+            None
+        """
+        pass
+
     # TODO: Document this
     tracked_variables: Dict[str, Any]
 
